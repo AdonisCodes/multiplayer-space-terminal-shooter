@@ -1,36 +1,39 @@
-import curses
-from dataclasses import dataclass
+import pygame
 
+pygame.init()
 
-@dataclass
-class Video():
-    height: int
-    width: int
-    screen: curses.window
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
 
-    def __init__(self, height, width):
-        self.height = height
-        self.width = width
-        self.screen = curses.initscr()
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+player = pygame.Rect(300, 250, 50, 50)
 
-    def get_size(self):
-        return self.height, self.width
+run = True
+while run:
+    screen.fill([0, 0, 0])
+    pygame.draw.rect(screen, (255, 0, 0), player)
+    
+    key = pygame.key.get_pressed()
+    if key[pygame.K_LEFT]:
+        if player.x - 1 < 0:
+            player.x = 0
+        player.x -= 1
+    if key[pygame.K_RIGHT]:
+        if player.x + 1 > SCREEN_WIDTH - player.width:
+            player.x = SCREEN_WIDTH - player.width
+        player.x += 1
+    if key[pygame.K_UP]:
+        if player.y - 1 < 0:
+            player.y = 0
+        player.y -= 1
+    if key[pygame.K_DOWN]:
+        if player.y + 1 > SCREEN_HEIGHT - player.height:
+            player.y = SCREEN_HEIGHT - player.height
+        player.y += 1
 
-    def draw(self, x, y, pixel):
-        if x < 0 or x >= self.width or y < 0 or y >= self.height:
-            return
-        if x > self.width or y > self.height:
-            return
-        self.screen.addch(y, x, pixel)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+    pygame.display.update()
 
-    def clear(self):
-        self.screen.clear()
-
-    def refresh(self):
-        self.screen.refresh()
-
-
-
-video = Video(20, 20)
-video.draw(0, 0, "X")
-video.refresh()
+pygame.quit()
